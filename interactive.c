@@ -257,7 +257,7 @@ void decodeCPR(struct aircraft* a)
     if (a->lon > 180)
         a->lon -= 360;
 
-    a->distance = distanceOnEarth(a->lat, a->lon, 50.483d, 9.700d);
+    a->distance = distanceOnEarth(a->lat, a->lon, Modes.lat, Modes.lon);
 }
 
 /* Receive new messages and populate the interactive mode with more info. */

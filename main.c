@@ -63,6 +63,8 @@ void modesInitConfig(void)
     Modes.interactive_rows = MODES_INTERACTIVE_ROWS;
     Modes.interactive_ttl = MODES_INTERACTIVE_TTL;
     Modes.aggressive = 0;
+    Modes.lat = 0.0;
+    Modes.lon = 0.0;
 }
 
 void modesInit(void)
@@ -104,6 +106,7 @@ void modesInit(void)
         }
     }
 
+
     /* Statistics */
     Modes.stat_valid_preamble = 0;
     Modes.stat_demodulated = 0;
@@ -123,39 +126,8 @@ void modesInit(void)
 void showHelp(void)
 {
     printf(
-        "--device-index <index>   Select RTL device (default: 0).\n"
-        "--gain <db>              Set gain (default: max gain. Use -100 for auto-gain).\n"
-        "--enable-agc             Enable the Automatic Gain Control (default: off).\n"
-        "--freq <hz>              Set frequency (default: 1090 Mhz).\n"
-        "--ifile <filename>       Read data from file (use '-' for stdin).\n"
-        "--loop                   With --ifile, read the same file in a loop.\n"
-        "--interactive            Interactive mode refreshing data on screen.\n"
-        "--interactive-rows <num> Max number of rows in interactive mode (default: 15).\n"
-        "--interactive-ttl <sec>  Remove from list if idle for <sec> (default: 60).\n"
-        "--raw                    Show only messages hex values.\n"
-        "--net                    Enable networking.\n"
-        "--net-only               Enable just networking, no RTL device or file used.\n"
-        "--net-ro-port <port>     TCP listening port for raw output (default: 30002).\n"
-        "--net-ri-port <port>     TCP listening port for raw input (default: 30001).\n"
-        "--net-http-port <port>   HTTP server port (default: 8080).\n"
-        "--net-sbs-port <port>    TCP listening port for BaseStation format output (default: 30003).\n"
-        "--no-fix                 Disable single-bits error correction using CRC.\n"
-        "--no-crc-check           Disable messages with broken CRC (discouraged).\n"
-        "--aggressive             More CPU for more messages (two bits fixes, ...).\n"
-        "--stats                  With --ifile print stats at exit. No other output.\n"
-        "--onlyaddr               Show only ICAO addresses (testing purposes).\n"
-        "--metric                 Use metric units (meters, km/h, ...).\n"
-        "--snip <level>           Strip IQ file removing samples < level.\n"
-        "--debug <flags>          Debug mode (verbose), see README for details.\n"
-        "--help                   Show this help.\n"
-        "\n"
-        "Debug mode flags: d = Log frames decoded with errors\n"
-        "                  D = Log frames decoded with zero errors\n"
-        "                  c = Log frames with bad CRC\n"
-        "                  C = Log frames with good CRC\n"
-        "                  p = Log frames with bad preamble\n"
-        "                  n = Log network debugging info\n"
-        "                  j = Log frames to frames.js, loadable by debug.html.\n");
+        "--lat <latitude>    Select the latitude of your position.\n"
+        "--lon <longitude>   Select the longitude of your position.\n");
 }
 
 /* This function is called a few times every second by main in order to
@@ -180,6 +152,18 @@ int main(int argc, char** argv)
 
     /* Parse the command line options */
     for (j = 1; j < argc; j++) {
+        int more = j+1 < argc; /* There are more arguments. */
+        if (!strcmp(argv[j],"--lat") && more) {
+            Modes.lat = atof(argv[++j]);
+        }else if (!strcmp(argv[j],"--lon") && more) {
+            Modes.lon = atof(argv[++j]);
+        }else {
+            fprintf(stderr,
+                "Unknown or not enough arguments for option '%s'.\n\n",
+                argv[j]);
+            showHelp();
+            exit(1);
+        }
     }
     /* Initialization */
     modesInit();

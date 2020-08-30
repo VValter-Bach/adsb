@@ -120,6 +120,8 @@ struct Modes{
     /* Interactive mode */
     struct aircraft* aircrafts;
     long long interactive_last_update; /* Last screen update in milliseconds */
+    double lat;
+    double lon;
 
     /* Statistics */
     long long stat_valid_preamble;
